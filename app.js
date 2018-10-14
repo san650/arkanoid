@@ -5,9 +5,9 @@ var palette = {
 }
 
 var maxWidth = 400;
-var maxHeight = 600;
+var maxHeight = 400;
 var brickWidth = maxWidth / 10;
-var brickHeight = maxHeight / 30;
+var brickHeight = maxHeight / 20;
 
 function brick(x, y, count) {
   return {
@@ -28,6 +28,15 @@ function init() {
   document.body.appendChild(canvas);
 
   game.start();
+
+
+  document.body.onkeypress = (event) => {
+    if (event.code === "KeyH") {
+      game.model.move = 'left';
+    } else if (event.code === "KeyL") {
+      game.model.move = 'right';
+    }
+  };
 
   // for instrospection
   window.game = game;
@@ -125,11 +134,14 @@ class Game {
         brick(9, 2, 10),
         brick(9, 3, 10),
         brick(9, 4, 10),
+      ],
 
-        brick(5, 10, 10),
-        brick(5, 11, 7),
-        brick(5, 12, 4),
-      ]
+      player: {
+        x: 4 * brickWidth,
+        y: 19 * brickHeight,
+        width: brickWidth * 2,
+        height: brickHeight,
+      }
     };
 
     this.mainLoop = this.mainLoop.bind(this);
@@ -178,6 +190,33 @@ class Game {
   }
 
   updateModel(timestamp) {
+    // player
+    if (this.model.move) {
+
+      var howmuch = (timestamp / 1000) * 600;
+      console.log(howmuch);
+
+      if (this.model.move === 'left') {
+        if (this.model.player.x > howmuch) {
+          this.model.player.x -= howmuch;
+        } else {
+          this.model.player.x = 0;
+        }
+      }
+
+      if (this.model.move === 'right') {
+        if (this.model.player.x + this.model.player.width < maxWidth - howmuch) {
+          this.model.player.x += howmuch;
+        } else {
+          this.model.player.x = maxWidth - this.model.player.width;
+        }
+
+      }
+
+      this.model.move = null;
+    }
+
+    // ball
     var ball = this.model.ball;
     var width = this.model.width;
     var height = this.model.height;
@@ -228,6 +267,16 @@ class Game {
     });
     this.model.bricks = this.model.bricks.filter((b) => b.count > 0);
 
+    var collision;
+    if (collision = this.brickCollision(x, y, ball.radius, this.model.player.x, this.model.player.y, this.model.player.width, this.model.player.height, ball.x, ball.y)) {
+      console.log('Good job!');
+      if (collision === 'vertical') {
+        vy = (-1 * ball.velocity.y);
+      } else {
+        vx = (-1 * ball.velocity.x);
+      }
+    }
+
     ball.x = x;
     ball.y = y;
     ball.velocity.x = vx;
@@ -238,6 +287,7 @@ class Game {
     this.renderBackground();
     this.renderBricks();
     this.renderBall();
+    this.renderPlayer();
   }
 
   renderBackground() {
@@ -281,6 +331,18 @@ class Game {
       brick.y + 13,
       brick.count.toString(),
       "black"
+    );
+  }
+
+  renderPlayer() {
+    var player = this.model.player;
+
+    this.ui.rectangle(
+      player.x,
+      player.y,
+      player.width,
+      player.height,
+      "red"
     );
   }
 }

@@ -111,6 +111,7 @@ class Game {
   constructor(ui) {
     this.ui = ui;
     this.model = {
+      isActive: true,
       width: ui.width,
       height: ui.height,
 
@@ -119,21 +120,21 @@ class Game {
         y: 332.0,
         velocity: {
           x: 0.1,
-          y: 0.3,
+          y: -0.3,
         },
         radius: 10.0,
       },
 
       bricks: [
-        brick(3, 3, 10),
-        brick(4, 3, 10),
-        brick(3, 4, 10),
-        brick(5, 2, 10),
-        brick(5, 3, 10),
-        brick(5, 4, 10),
-        brick(9, 2, 10),
-        brick(9, 3, 10),
-        brick(9, 4, 10),
+        brick(3, 3, 3),
+        brick(4, 3, 3),
+        brick(3, 4, 1),
+        brick(5, 2, 1),
+        brick(5, 3, 1),
+        brick(5, 4, 3),
+        brick(9, 2, 3),
+        brick(9, 3, 3),
+        brick(9, 4, 3),
       ],
 
       player: {
@@ -169,7 +170,11 @@ class Game {
     this.updateModel(elapsedTime);
     this.render();
 
-    window.requestAnimationFrame(this.mainLoop);
+    if (this.model.isActive) {
+      window.requestAnimationFrame(this.mainLoop);
+    } else {
+      console.log('The End');
+    }
   }
 
   brickCollision(x, y, radius, bx, by, bwidth, bheight, px, py) {
@@ -194,7 +199,6 @@ class Game {
     if (this.model.move) {
 
       var howmuch = (timestamp / 1000) * 600;
-      console.log(howmuch);
 
       if (this.model.move === 'left') {
         if (this.model.player.x > howmuch) {
@@ -240,6 +244,7 @@ class Game {
     if ((y + ball.radius) > height) {
       y = height - ball.radius;
       vy = (-1 * ball.velocity.y);
+      this.model.isActive = false;
     } else if ((y - ball.radius) < 0) {
       y = ball.radius;
       vy = (-1 * ball.velocity.y);
@@ -252,7 +257,6 @@ class Game {
       var collision;
 
       if (collision = this.brickCollision(x, y, ball.radius, b.x, b.y, b.width, b.height, ball.x, ball.y)) {
-        console.log('HIT', collision);
 
         if(b.count > 0) {
           b.count -= 1;
@@ -269,7 +273,6 @@ class Game {
 
     var collision;
     if (collision = this.brickCollision(x, y, ball.radius, this.model.player.x, this.model.player.y, this.model.player.width, this.model.player.height, ball.x, ball.y)) {
-      console.log('Good job!');
       if (collision === 'vertical') {
         vy = (-1 * ball.velocity.y);
       } else {

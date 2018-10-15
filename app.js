@@ -189,16 +189,12 @@ class Game {
     if (leftMiss || rightMiss || topMiss || bottomMiss) {
       return false;
     } else if (!leftMiss && (px + radius) < bx) {
-      console.log('left');
       return 'left';
     } else if (!rightMiss && (px - radius) > (bx + bwidth)) {
-      console.log('right');
       return 'right';
     } else if (!topMiss && (py + radius) < by){
-      console.log('top');
       return 'top';
     } else {
-      console.log('bottom');
       return 'bottom';
     }
   }
@@ -246,7 +242,7 @@ class Game {
       vx = ball.velocity.x;
     }
 
-    if ((y + ball.radius) > height) {
+    if ((y + ball.radius) >= height) {
       y = height - ball.radius;
       vy = (-1 * ball.velocity.y);
       this.model.isActive = false;
@@ -262,8 +258,6 @@ class Game {
       var collision;
 
       if (collision = this.brickCollision(x, y, ball.radius, b.x, b.y, b.width, b.height, ball.x, ball.y)) {
-        console.log('brick collision', collision);
-
         if(b.count > 0) {
           b.count -= 1;
         }
@@ -285,13 +279,12 @@ class Game {
     });
 
     this.model.bricks = this.model.bricks.filter((b) => b.count > 0);
+    this.model.isActive = this.model.isActive && this.model.bricks.length;
 
     var collision;
     var player = this.model.player;
 
     if (collision = this.brickCollision(x, y, ball.radius, player.x, player.y, player.width, player.height, ball.x, ball.y)) {
-      console.log('player collision', collision);
-
       if (collision === "top") {
         y = player.y - ball.radius;
         vy = (-1 * ball.velocity.y);

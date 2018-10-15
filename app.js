@@ -30,7 +30,7 @@ function init() {
   game.start();
 
 
-  document.body.onkeypress = (event) => {
+  document.body.onkeydown = (event) => {
     if (event.code === "KeyH") {
       game.model.move = 'left';
     } else if (event.code === "KeyL") {
@@ -38,7 +38,10 @@ function init() {
     }
   };
 
-  // for instrospection
+  document.body.onkeyup = () => {
+    game.model.move = null;
+  };
+
   window.game = game;
 }
 
@@ -186,19 +189,24 @@ class Game {
     if (leftMiss || rightMiss || topMiss || bottomMiss) {
       return false;
     } else if (!leftMiss && (px + radius) < bx) {
-      return 'horizontal'
+      console.log('left');
+      return 'left';
     } else if (!rightMiss && (px - radius) > (bx + bwidth)) {
-      return 'horizontal'
+      console.log('right');
+      return 'right';
+    } else if (!topMiss && (py + radius) < by){
+      console.log('top');
+      return 'top';
     } else {
-      return 'vertical'
+      console.log('bottom');
+      return 'bottom';
     }
   }
 
   updateModel(timestamp) {
     // player
     if (this.model.move) {
-
-      var howmuch = (timestamp / 1000) * 600;
+      var howmuch = (timestamp / 1000) * 400;
 
       if (this.model.move === 'left') {
         if (this.model.player.x > howmuch) {
@@ -214,10 +222,7 @@ class Game {
         } else {
           this.model.player.x = maxWidth - this.model.player.width;
         }
-
       }
-
-      this.model.move = null;
     }
 
     // ball
@@ -257,25 +262,47 @@ class Game {
       var collision;
 
       if (collision = this.brickCollision(x, y, ball.radius, b.x, b.y, b.width, b.height, ball.x, ball.y)) {
+        console.log('brick collision', collision);
 
         if(b.count > 0) {
           b.count -= 1;
         }
 
-        if (collision === 'vertical') {
+        if (collision === "top") {
+          y = b.y - ball.radius;
           vy = (-1 * ball.velocity.y);
+        } else if (collision === "bottom") {
+          y = b.y + b.height + ball.radius;
+          vy = (-1 * ball.velocity.y);
+        } else if( collision === "left") {
+          x = b.x - ball.radius;
+          vx = (-1 * ball.velocity.x);
         } else {
+          x = b.x + b.width + ball.radius;
           vx = (-1 * ball.velocity.x);
         }
       }
     });
+
     this.model.bricks = this.model.bricks.filter((b) => b.count > 0);
 
     var collision;
-    if (collision = this.brickCollision(x, y, ball.radius, this.model.player.x, this.model.player.y, this.model.player.width, this.model.player.height, ball.x, ball.y)) {
-      if (collision === 'vertical') {
+    var player = this.model.player;
+
+    if (collision = this.brickCollision(x, y, ball.radius, player.x, player.y, player.width, player.height, ball.x, ball.y)) {
+      console.log('player collision', collision);
+
+      if (collision === "top") {
+        y = player.y - ball.radius;
         vy = (-1 * ball.velocity.y);
+      } else if (collision === "bottom") {
+        y = player.y + player.height + ball.radius;
+        vy = (-1 * ball.velocity.y);
+      } else if( collision === "left") {
+        x = player.x - ball.radius;
+        vx = (-1 * ball.velocity.x);
       } else {
+        x = player.x + player.width + ball.radius;
         vx = (-1 * ball.velocity.x);
       }
     }

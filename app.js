@@ -25,7 +25,7 @@ var maxHeight = 400;
 var brickWidth = maxWidth / 10;
 var brickHeight = maxHeight / 20;
 
-function brick(x, y, count) {
+function makeBrick(x, y, count) {
   return {
     x: x * brickWidth,
     y: y * brickHeight,
@@ -33,6 +33,29 @@ function brick(x, y, count) {
     height: brickHeight,
     count: count
   };
+}
+
+function levelGenerator(bricksCount) {
+  var draw = [];
+  var bricks = [];
+
+  for (var i = 0; i < bricksCount; i++) {
+    var pos;
+
+    do {
+      pos = Math.round(Math.random() * 100); // 10x10 matrix
+    } while(draw.indexOf(pos) !== -1);
+
+    draw.push(pos);
+
+    var x = pos % 10;
+    var y = Math.floor(pos / 10);
+    var count = Math.round(Math.random(7) * 7) + 1;
+
+    bricks.push(makeBrick(x, y, count));
+  }
+
+  return bricks;
 }
 
 function init() {
@@ -146,17 +169,7 @@ class Game {
         radius: 10.0,
       },
 
-      bricks: [
-        brick(3, 3, 3),
-        brick(4, 3, 3),
-        brick(3, 4, 1),
-        brick(5, 2, 1),
-        brick(5, 3, 1),
-        brick(5, 4, 3),
-        brick(9, 2, 3),
-        brick(9, 3, 3),
-        brick(9, 4, 3),
-      ],
+      bricks: levelGenerator(30),
 
       player: {
         x: 4 * brickWidth,

@@ -110,6 +110,8 @@ class UI {
   }
 }
 
+var FORCE = 0.3;
+
 class Game {
   constructor(ui) {
     this.ui = ui;
@@ -122,8 +124,8 @@ class Game {
         x: 300.0,
         y: 332.0,
         velocity: {
-          x: 0.1,
-          y: -0.3,
+          x: Math.cos(45) * FORCE,
+          y: -Math.sin(45) * FORCE,
         },
         radius: 10.0,
       },
@@ -287,7 +289,16 @@ class Game {
     if (collision = this.brickCollision(x, y, ball.radius, player.x, player.y, player.width, player.height, ball.x, ball.y)) {
       if (collision === "top") {
         y = player.y - ball.radius;
-        vy = (-1 * ball.velocity.y);
+        // Me tengo que cubrir con el radius de la bola porque el centro de la
+        // bola puede quedar por fuera del player al momento del choque
+        //
+        // Centro es 0
+        // Izquierda [-1.0,0)
+        // Derecha (0,1.0]
+        var adyasente = ((x - player.x) - (player.width / 2)) / ((player.width + ball.radius) / 2);
+        var opuesto = Math.sqrt(1 - Math.pow(adyasente, 2));
+        vx = (adyasente) * FORCE;
+        vy = (-1.0 * opuesto) * FORCE;
       } else if (collision === "bottom") {
         y = player.y + player.height + ball.radius;
         vy = (-1 * ball.velocity.y);

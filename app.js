@@ -1,7 +1,23 @@
 var palette = {
-  background: 'Black',
-  ball: 'White',
-  brick: 'HotPink',
+  background: 'darkslategrey',
+  ball: 'snow',
+  previousBalls: [
+    'rgba(0,0,0)',
+    'rgba(20,20,20)',
+    'rgba(40,40,40)',
+    'rgba(100,60,60)',
+    'rgba(120,80,80)',
+  ],
+  brick: [
+    'hotpink',
+    'aliceblue',
+    'antiquewhite',
+    'bisque',
+    'burlywood',
+    'peachpuff',
+    'blueviolet'
+  ],
+  player: 'tomato'
 }
 
 var maxWidth = 400;
@@ -331,12 +347,37 @@ class Game {
   renderBall() {
     var ball = this.model.ball;
 
+    if (this.previousBalls) {
+      this.previousBalls.forEach((old, i) => {
+        this.ui.circle(
+          old.x,
+          old.y,
+          old.radius,
+          palette.previousBalls[i],
+        );
+      });
+    }
+
     this.ui.circle(
       ball.x,
       ball.y,
       ball.radius,
       palette.ball,
     );
+
+    if (!this.previousBalls) {
+      this.previousBalls = [];
+    }
+
+    this.previousBalls.push({
+      x: ball.x,
+      y: ball.y,
+      radius: ball.radius,
+    });
+
+    if (this.previousBalls.length > 5) {
+      this.previousBalls.shift();
+    }
   }
 
   renderBricks() {
@@ -351,17 +392,10 @@ class Game {
       brick.y,
       brick.width,
       brick.height,
-      "white"
-    );
-    this.ui.rectangle(
-      brick.x + 1,
-      brick.y + 1,
-      brick.width - 2,
-      brick.height - 2,
-      palette.brick
+      palette.brick[brick.count % palette.brick.length]
     );
     this.ui.text(
-      brick.x + 12,
+      brick.x + 16,
       brick.y + 13,
       brick.count.toString(),
       "black"
@@ -376,7 +410,7 @@ class Game {
       player.y,
       player.width,
       player.height,
-      "red"
+      palette.player
     );
   }
 }

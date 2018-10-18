@@ -64,12 +64,28 @@ function init() {
   var ui = new UI(canvas);
   var game = new Game(ui);
 
-  document.body.appendChild(canvas);
+  var help = document.createElement("p");
+  help.innerHTML = "Move the bar using <code>h</code> and <code>l</code> keys.<br><strong>Press any key to start the game.</strong>";
 
-  game.start();
+  var container = document.createElement("div");
+  container.classList.add("container");
 
+  container.appendChild(help);
+  container.appendChild(canvas);
+
+  document.body.appendChild(container);
+
+  game.render();
+
+  var started = false;
 
   document.body.onkeydown = (event) => {
+    if (!started) {
+      started = true;
+      game.start();
+      return;
+    }
+
     if (event.code === "KeyH") {
       game.model.move = 'left';
     } else if (event.code === "KeyL") {

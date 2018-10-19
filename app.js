@@ -17,13 +17,16 @@ var palette = {
     'peachpuff',
     'blueviolet'
   ],
-  player: 'tomato'
+  player: 'tomato',
+  brickText: 'black',
+  osd: 'yellow'
 }
 
 var maxWidth = 400;
-var maxHeight = 400;
+var maxHeight = 600;
 var brickWidth = maxWidth / 10;
 var brickHeight = maxHeight / 20;
+var fontHeight = 10;
 
 function makeBrick(x, y, count) {
   return {
@@ -99,7 +102,6 @@ function init() {
 
   window.game = game;
 }
-
 
 class UI {
   constructor(canvas) {
@@ -367,6 +369,7 @@ class Game {
     this.renderBricks();
     this.renderBall();
     this.renderPlayer();
+    this.renderOSD();
   }
 
   renderBackground() {
@@ -417,17 +420,17 @@ class Game {
 
   renderBrick(brick) {
     this.ui.rectangle(
-      brick.x,
-      brick.y,
-      brick.width,
-      brick.height,
+      brick.x + 1,
+      brick.y + 1,
+      brick.width - 2,
+      brick.height - 2,
       palette.brick[brick.count % palette.brick.length]
     );
     this.ui.text(
       brick.x + 16,
-      brick.y + 13,
+      brick.y + (brick.height / 2) + (fontHeight / 2),
       brick.count.toString(),
-      "black"
+      palette.brickText
     );
   }
 
@@ -441,6 +444,17 @@ class Game {
       player.height,
       palette.player
     );
+  }
+
+  renderOSD() {
+    if (!this.model.isActive) {
+      this.ui.text(
+        (this.model.width / 2) - 20,
+        (this.model.height / 2) + 50,
+        "THE END",
+        palette.osd
+      );
+    }
   }
 }
 

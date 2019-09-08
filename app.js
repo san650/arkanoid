@@ -1,26 +1,4 @@
-var palette = {
-  background: 'darkslategrey',
-  ball: 'snow',
-  previousBalls: [
-    'rgba(0,0,0)',
-    'rgba(20,20,20)',
-    'rgba(40,40,40)',
-    'rgba(100,60,60)',
-    'rgba(120,80,80)',
-  ],
-  brick: [
-    'hotpink',
-    'aliceblue',
-    'antiquewhite',
-    'bisque',
-    'burlywood',
-    'peachpuff',
-    'blueviolet'
-  ],
-  player: 'tomato',
-  brickText: 'black',
-  osd: 'yellow'
-}
+import { colors } from "./lib/palette.js";
 
 var maxWidth = 400;
 var maxHeight = 600;
@@ -167,7 +145,7 @@ class UI {
   }
 }
 
-var FORCE = 0.3;
+var FORCE = 0.4;
 
 class Game {
   constructor(ui) {
@@ -373,7 +351,7 @@ class Game {
   }
 
   renderBackground() {
-    this.ui.fill(palette.brackground);
+    this.ui.fill(colors.brackground);
   }
 
   renderBall() {
@@ -385,7 +363,7 @@ class Game {
           old.x,
           old.y,
           old.radius,
-          palette.previousBalls[i],
+          colors.previousBalls[i],
         );
       });
     }
@@ -394,7 +372,7 @@ class Game {
       ball.x,
       ball.y,
       ball.radius,
-      palette.ball,
+      colors.ball,
     );
 
     if (!this.previousBalls) {
@@ -424,13 +402,13 @@ class Game {
       brick.y + 1,
       brick.width - 2,
       brick.height - 2,
-      palette.brick[brick.count % palette.brick.length]
+      colors.brick[brick.count % colors.brick.length]
     );
     this.ui.text(
       brick.x + 16,
       brick.y + (brick.height / 2) + (fontHeight / 2),
       brick.count.toString(),
-      palette.brickText
+      colors.brickText
     );
   }
 
@@ -442,7 +420,7 @@ class Game {
       player.y,
       player.width,
       player.height,
-      palette.player
+      colors.player
     );
   }
 
@@ -452,7 +430,7 @@ class Game {
         (this.model.width / 2) - 20,
         (this.model.height / 2) + 50,
         "THE END",
-        palette.osd
+        colors.osd
       );
     }
   }
